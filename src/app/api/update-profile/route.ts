@@ -21,12 +21,12 @@ export async function POST(req: NextRequest) {
 
         // 2. Update Text Fields
         // We only update fields that are allowed to be edited. 
-        // Usually Company Name/CR might be locked, but user asked for "edit functionality for the fields".
-        // I'll allow editing most fields.
         const textFields = [
             'companyName', 'registrationNumber', 'vatNumber', 'email', 'accountsEmail',
             'companyType', 'yearRegistered', 'employeeCount', 'annualTurnover',
-            'pastWorks', 'clientVendorIDs'
+            'pastWorks', 'clientVendorIDs',
+            // New Fields
+            'address', 'telephone', 'salesMobile', 'oemStatus', 'materialsServices', 'majorClients'
         ];
 
         const updatedData = { ...currentData };
@@ -37,6 +37,14 @@ export async function POST(req: NextRequest) {
                 updatedData[field] = value as string;
             }
         });
+
+        // Handle "Others" Company Type Logic
+        const companyType = formData.get('companyType') as string;
+        const companyTypeOther = formData.get('companyTypeOther') as string;
+
+        if (companyType === 'Others' && companyTypeOther) {
+            updatedData.companyType = `Others - ${companyTypeOther}`;
+        }
 
         // 3. Handle File Uploads
         const fileKeys = ['crFile', 'vatFile', 'profileFile', 'brochureFile'];

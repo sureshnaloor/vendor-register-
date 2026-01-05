@@ -1,11 +1,46 @@
 "use client";
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 
 export default function DashboardClient({ initialData, vendorCode }: { initialData: any, vendorCode: string }) {
     const [isEditing, setIsEditing] = useState(false);
     const [loading, setLoading] = useState(false);
+    const [companyType, setCompanyType] = useState(initialData.companyType || 'Proprietorship/Establishment');
+    const [otherType, setOtherType] = useState('');
     const router = useRouter();
+
+    useEffect(() => {
+        if (initialData.companyType && initialData.companyType.startsWith('Others - ')) {
+            setCompanyType('Others');
+            setOtherType(initialData.companyType.replace('Others - ', ''));
+        } else {
+            setCompanyType(initialData.companyType || 'Proprietorship/Establishment');
+            setOtherType('');
+        }
+    }, [initialData.companyType]);
+
+    // Handle File Deletion
+    async function handleDeleteFile(path: string) {
+        if (!confirm('Are you sure you want to delete this document?')) return;
+
+        setLoading(true);
+        try {
+            const res = await fetch(`/api/file/${path}`, {
+                method: 'DELETE',
+            });
+
+            if (!res.ok) {
+                throw new Error('Failed to delete file');
+            }
+
+            router.refresh();
+        } catch (error) {
+            console.error(error);
+            alert('Error deleting file');
+        } finally {
+            setLoading(false);
+        }
+    }
 
     // Helper to handle form submission
     async function handleSave(e: React.FormEvent<HTMLFormElement>) {
@@ -14,6 +49,15 @@ export default function DashboardClient({ initialData, vendorCode }: { initialDa
 
         try {
             const formData = new FormData(e.currentTarget);
+
+            // Handle Company Type Combination for Backend Consistency
+            // If the backend expects the same logic as register, we can leave it to backend if we updated it.
+            // But 'update-profile' route is currently generic. 
+            // We should ensure the backend handles this, OR we modify formData here.
+            // Let's modify formData here to simplify backend changes or keep them consistent.
+            // Actually, best to let backend handle "Others" logic if we update backend.
+            // But for now, let's just make sure formData has what we need. 
+
             const res = await fetch('/api/update-profile', {
                 method: 'POST',
                 body: formData,
@@ -21,6 +65,14 @@ export default function DashboardClient({ initialData, vendorCode }: { initialDa
 
             if (!res.ok) {
                 throw new Error('Failed to update profile');
+            }
+
+            const result = await res.json();
+
+            // Update local state if needed or just toggle editing
+            if (result.data) {
+                // If we want to reflect "Others - Value" immediately without refresh issues:
+                // But router.refresh() should handle it.
             }
 
             setIsEditing(false);
@@ -70,17 +122,44 @@ export default function DashboardClient({ initialData, vendorCode }: { initialDa
                                 <EditField label="Company Name" name="companyName" defaultValue={initialData.companyName} required />
                                 <EditField label="Registration No." name="registrationNumber" defaultValue={initialData.registrationNumber} required />
                                 <EditField label="VAT Number" name="vatNumber" defaultValue={initialData.vatNumber} required />
+
                                 <div className="form-group" style={{ marginBottom: 0 }}>
                                     <label className="label">Company Type</label>
-                                    <select name="companyType" className="select" defaultValue={initialData.companyType}>
+                                    <select
+                                        name="companyType"
+                                        className="select"
+                                        value={companyType}
+                                        onChange={(e) => setCompanyType(e.target.value)}
+                                    >
+                                        <option value="Proprietorship/Establishment">Proprietorship/Establishment</option>
                                         <option value="LLC">LLC</option>
-                                        <option value="Corporation">Corporation</option>
-                                        <option value="Sole Proprietorship">Sole Proprietorship</option>
-                                        <option value="Partnership">Partnership</option>
+                                        <option value="Joint stock company">Joint stock company</option>
+                                        <option value="Public listed company">Public listed company</option>
+                                        <option value="JV">JV</option>
+                                        <option value="Holding company">Holding company</option>
+                                        <option value="Others">Others</option>
                                     </select>
+                                    {companyType === 'Others' && (
+                                        <input
+                                            name="companyTypeOther"
+                                            className="input"
+                                            defaultValue={otherType}
+                                            placeholder="Specify company type..."
+                                            style={{ marginTop: '0.5rem' }}
+                                            required
+                                        />
+                                    )}
                                 </div>
+
                                 <EditField label="Email" name="email" defaultValue={initialData.email} required type="email" />
                                 <EditField label="Accounts Email" name="accountsEmail" defaultValue={initialData.accountsEmail} type="email" />
+                                <EditField label="Sales Mobile" name="salesMobile" defaultValue={initialData.salesMobile} type="tel" />
+                                <EditField label="Telephone" name="telephone" defaultValue={initialData.telephone} type="tel" />
+
+                                <div className="form-group" style={{ marginBottom: 0 }}>
+                                    <label className="label">Full Address</label>
+                                    <textarea name="address" className="textarea" rows={3} defaultValue={initialData.address} required />
+                                </div>
                             </div>
                         ) : (
                             <>
@@ -90,6 +169,12 @@ export default function DashboardClient({ initialData, vendorCode }: { initialDa
                                 <ProfileRow label="Company Type" value={initialData.companyType} />
                                 <ProfileRow label="Email" value={initialData.email} />
                                 <ProfileRow label="Accounts Email" value={initialData.accountsEmail} />
+                                <ProfileRow label="Sales Mobile" value={initialData.salesMobile} />
+                                <ProfileRow label="Telephone" value={initialData.telephone} />
+                                <div style={{ marginTop: '1rem', paddingTop: '1rem', borderTop: '1px solid var(--card-border)' }}>
+                                    <label className="label" style={{ marginBottom: '0.25rem' }}>Full Address</label>
+                                    <div style={{ color: 'var(--foreground)', fontSize: '0.95rem' }}>{initialData.address || '-'}</div>
+                                </div>
                             </>
                         )}
                     </div>
@@ -101,28 +186,52 @@ export default function DashboardClient({ initialData, vendorCode }: { initialDa
                         </div>
 
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-                            <DocRow label="Commercial Registration" fileKey="crFile" path={initialData.documents?.crFile} isEditing={isEditing} />
-                            <DocRow label="VAT Certificate" fileKey="vatFile" path={initialData.documents?.vatFile} isEditing={isEditing} />
-                            <DocRow label="Company Profile" fileKey="profileFile" path={initialData.documents?.profileFile} isEditing={isEditing} />
-                            <DocRow label="Brochure" fileKey="brochureFile" path={initialData.documents?.brochureFile} isEditing={isEditing} />
+                            <DocRow label="Commercial Registration" fileKey="crFile" path={initialData.documents?.crFile} isEditing={isEditing} onDelete={handleDeleteFile} />
+                            <DocRow label="VAT Certificate" fileKey="vatFile" path={initialData.documents?.vatFile} isEditing={isEditing} onDelete={handleDeleteFile} />
+                            <DocRow label="Company Profile" fileKey="profileFile" path={initialData.documents?.profileFile} isEditing={isEditing} onDelete={handleDeleteFile} />
+                            <DocRow label="Brochure" fileKey="brochureFile" path={initialData.documents?.brochureFile} isEditing={isEditing} onDelete={handleDeleteFile} />
                         </div>
                     </div>
                 </div>
 
-                {/* Experience Section */}
+                {/* Experience & Business Details Section */}
                 <div className="card" style={{ marginTop: '2rem' }}>
-                    <h2 style={{ fontSize: '1.25rem', fontWeight: 600, marginBottom: '1.5rem' }}>Experience & Stats</h2>
+                    <h2 style={{ fontSize: '1.25rem', fontWeight: 600, marginBottom: '1.5rem' }}>Business Details & Experience</h2>
                     <div className="grid-2">
                         <div>
                             {isEditing ? (
                                 <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
                                     <EditField label="Year Registered" name="yearRegistered" defaultValue={initialData.yearRegistered} />
-                                    <EditField label="Employees" name="employeeCount" defaultValue={initialData.employeeCount} />
-                                    <EditField label="Annual Turnover" name="annualTurnover" defaultValue={initialData.annualTurnover} />
+                                    <EditField label="OEM Status" name="oemStatus" defaultValue={initialData.oemStatus} />
+
+                                    <div className="form-group" style={{ marginBottom: 0 }}>
+                                        <label className="label">Number of Employees</label>
+                                        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', marginTop: '0.5rem' }}>
+                                            {['upto20', '20-200', '200-1000', 'over1000'].map(val => (
+                                                <label key={val} className="flex items-center gap-2" style={{ cursor: 'pointer', color: 'var(--foreground)' }}>
+                                                    <input type="radio" name="employeeCount" value={val} defaultChecked={initialData.employeeCount === val} />
+                                                    {val === 'upto20' ? 'Upto 20' : val === '20-200' ? '20-200' : val === '200-1000' ? '200-1000' : 'More than 1000'}
+                                                </label>
+                                            ))}
+                                        </div>
+                                    </div>
+
+                                    <div className="form-group" style={{ marginBottom: 0 }}>
+                                        <label className="label">Annual Turnover</label>
+                                        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', marginTop: '0.5rem' }}>
+                                            {['upto1M', '1-10M', '10-100M', 'over100M'].map(val => (
+                                                <label key={val} className="flex items-center gap-2" style={{ cursor: 'pointer', color: 'var(--foreground)' }}>
+                                                    <input type="radio" name="annualTurnover" value={val} defaultChecked={initialData.annualTurnover === val} />
+                                                    {val === 'upto1M' ? 'Upto 1M' : val === '1-10M' ? '1-10M' : val === '10-100M' ? '10-100M' : '> 100M'}
+                                                </label>
+                                            ))}
+                                        </div>
+                                    </div>
                                 </div>
                             ) : (
                                 <>
                                     <ProfileRow label="Year Registered" value={initialData.yearRegistered} />
+                                    <ProfileRow label="OEM Status" value={initialData.oemStatus} />
                                     <ProfileRow label="Employees" value={initialData.employeeCount} />
                                     <ProfileRow label="Annual Turnover" value={initialData.annualTurnover} />
                                 </>
@@ -132,8 +241,16 @@ export default function DashboardClient({ initialData, vendorCode }: { initialDa
                             {isEditing ? (
                                 <>
                                     <div style={{ marginBottom: '1rem' }}>
+                                        <label className="label">Materials and Services *</label>
+                                        <textarea name="materialsServices" className="textarea" rows={3} defaultValue={initialData.materialsServices} required />
+                                    </div>
+                                    <div style={{ marginBottom: '1rem' }}>
                                         <label className="label">Past Works</label>
                                         <textarea name="pastWorks" className="textarea" rows={3} defaultValue={initialData.pastWorks} />
+                                    </div>
+                                    <div style={{ marginBottom: '1rem' }}>
+                                        <label className="label">Major Clients (Last 5 Years)</label>
+                                        <textarea name="majorClients" className="textarea" rows={3} defaultValue={initialData.majorClients} />
                                     </div>
                                     <div style={{ marginBottom: '1rem' }}>
                                         <label className="label">Client Vendor IDs</label>
@@ -143,12 +260,20 @@ export default function DashboardClient({ initialData, vendorCode }: { initialDa
                             ) : (
                                 <>
                                     <div style={{ marginBottom: '1rem' }}>
+                                        <div className="label">Materials and Services</div>
+                                        <div style={{ color: 'var(--foreground)', fontSize: '0.95rem' }}>{initialData.materialsServices || '-'}</div>
+                                    </div>
+                                    <div style={{ marginBottom: '1rem' }}>
                                         <div className="label">Past Works</div>
-                                        <div style={{ color: '#e2e8f0', fontSize: '0.95rem' }}>{initialData.pastWorks || '-'}</div>
+                                        <div style={{ color: 'var(--foreground)', fontSize: '0.95rem' }}>{initialData.pastWorks || '-'}</div>
+                                    </div>
+                                    <div style={{ marginBottom: '1rem' }}>
+                                        <div className="label">Major Clients</div>
+                                        <div style={{ color: 'var(--foreground)', fontSize: '0.95rem' }}>{initialData.majorClients || '-'}</div>
                                     </div>
                                     <div style={{ marginBottom: '1rem' }}>
                                         <div className="label">Client Vendor IDs</div>
-                                        <div style={{ color: '#e2e8f0', fontSize: '0.95rem' }}>{initialData.clientVendorIDs || '-'}</div>
+                                        <div style={{ color: 'var(--foreground)', fontSize: '0.95rem' }}>{initialData.clientVendorIDs || '-'}</div>
                                     </div>
                                 </>
                             )}
@@ -183,9 +308,9 @@ export default function DashboardClient({ initialData, vendorCode }: { initialDa
 
 function ProfileRow({ label, value }: { label: string, value: string }) {
     return (
-        <div style={{ display: 'flex', justifyContent: 'space-between', padding: '0.75rem 0', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
-            <span style={{ color: '#94a3b8' }}>{label}</span>
-            <span style={{ fontWeight: 500 }}>{value || '-'}</span>
+        <div style={{ display: 'flex', justifyContent: 'space-between', padding: '0.75rem 0', borderBottom: '1px solid var(--card-border)' }}>
+            <span style={{ color: 'var(--secondary)' }}>{label}</span>
+            <span style={{ fontWeight: 500, color: 'var(--foreground)' }}>{value || '-'}</span>
         </div>
     )
 }
@@ -199,32 +324,46 @@ function EditField({ label, name, defaultValue, required, type = 'text' }: { lab
     )
 }
 
-function DocRow({ label, fileKey, path, isEditing }: { label: string, fileKey: string, path: string | undefined, isEditing: boolean }) {
+function DocRow({ label, fileKey, path, isEditing, onDelete }: { label: string, fileKey: string, path: string | undefined, isEditing: boolean, onDelete: (path: string) => void }) {
     return (
         <div style={{ padding: '0.75rem', background: 'var(--input-bg)', borderRadius: '8px' }}>
-            <div style={{ marginBottom: '0.5rem', color: '#94a3b8', fontSize: '0.875rem' }}>{label}</div>
+            <div style={{ marginBottom: '0.5rem', color: 'var(--secondary)', fontSize: '0.875rem' }}>{label}</div>
 
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '1rem' }}>
                 {path ? (
-                    <div style={{ display: 'flex', alignItems: 'center', overflow: 'hidden' }}>
-                        <span style={{ marginRight: '0.5rem' }}>📄</span>
-                        <span style={{ fontSize: '0.875rem', textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap' }}>
-                            {String(path).split('/').pop()}
-                        </span>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', overflow: 'hidden' }}>
+                            <span style={{ marginRight: '0.5rem' }}>📄</span>
+                            <a href={`/api/file/${path}`} target="_blank" rel="noopener noreferrer" style={{ fontSize: '0.875rem', textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap', color: 'var(--primary)', textDecoration: 'underline' }}>
+                                View Document
+                            </a>
+                        </div>
+                        {isEditing && (
+                            <button
+                                type="button"
+                                onClick={() => onDelete(path)}
+                                style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--error)', fontSize: '0.875rem', display: 'flex', alignItems: 'center', gap: '0.25rem' }}
+                            >
+                                🗑️ Delete
+                            </button>
+                        )}
                     </div>
                 ) : (
-                    <span style={{ fontSize: '0.875rem', color: '#64748b', fontStyle: 'italic' }}>No file uploaded</span>
+                    <span style={{ fontSize: '0.875rem', color: 'var(--secondary)', fontStyle: 'italic' }}>No file uploaded</span>
                 )}
 
-                {isEditing && (
+                {isEditing && !path && (
                     <div className="file-input-wrapper">
-                        {/* We use a simple label overlay or just the input. Standard file input is fine. */}
                         <input type="file" name={fileKey} style={{ fontSize: '0.75rem', width: '200px' }} accept=".pdf,.jpg,.png" />
                     </div>
                 )}
+                {isEditing && path && (
+                    <div className="file-input-wrapper" style={{ opacity: 0.5, pointerEvents: 'none' }}>
+                        {/* Disabled/Hidden input if file exists, force delete first */}
+                        <span style={{ fontSize: '0.75rem', color: 'var(--secondary)' }}>Delete existing to upload new</span>
+                    </div>
+                )}
             </div>
-
-            {/* If we strictly wanted a "Replace" button UI we could hide the input, but standard input is clearer for "Selecting a new file" */}
         </div>
     )
 }

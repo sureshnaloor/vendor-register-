@@ -13,22 +13,37 @@ export async function POST(req: NextRequest) {
         const vatNumber = formData.get('vatNumber') as string;
         const email = formData.get('email') as string; // Main contact email
         const accountsEmail = formData.get('accountsEmail') as string;
-        const companyType = formData.get('companyType') as string;
+        let companyType = formData.get('companyType') as string;
+        const companyTypeOther = formData.get('companyTypeOther') as string;
         const yearRegistered = formData.get('yearRegistered') as string;
         const employeeCount = formData.get('employeeCount') as string;
         const annualTurnover = formData.get('annualTurnover') as string;
         const pastWorks = formData.get('pastWorks') as string;
         const clientVendorIDs = formData.get('clientVendorIDs') as string;
 
-        // Validate Mandatory Fields (Simple check)
-        if (!companyName || !email || !registrationNumber) {
+        // New Fields
+        const address = formData.get('address') as string;
+        const telephone = formData.get('telephone') as string;
+        const salesMobile = formData.get('salesMobile') as string;
+        const oemStatus = formData.get('oemStatus') as string;
+        const materialsServices = formData.get('materialsServices') as string;
+        const majorClients = formData.get('majorClients') as string;
+
+        // Validations
+        // 1. Mandatory Text Fields
+        if (!companyName || !email || !registrationNumber || !vatNumber || !address || !materialsServices) {
             return NextResponse.json({ error: 'Missing mandatory fields' }, { status: 400 });
+        }
+
+        // 2. Handle "Others" Company Type
+        if (companyType === 'Others' && companyTypeOther) {
+            companyType = `Others - ${companyTypeOther}`;
         }
 
         // Generate Vendor Code
         const vendorCode = nanoid(10).toUpperCase();
 
-        // Upload Files
+        // Upload Files (Optional)
         const fileUrls: Record<string, string> = {};
         const fileKeys = ['crFile', 'vatFile', 'profileFile', 'brochureFile'];
 
@@ -58,6 +73,13 @@ export async function POST(req: NextRequest) {
             annualTurnover,
             pastWorks,
             clientVendorIDs,
+            // New Fields
+            address,
+            telephone,
+            salesMobile,
+            oemStatus,
+            materialsServices,
+            majorClients,
             documents: fileUrls,
             createdAt: new Date().toISOString(),
             updatedAt: new Date().toISOString(),

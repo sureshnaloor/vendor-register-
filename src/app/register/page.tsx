@@ -6,6 +6,7 @@ export default function Register() {
     const [loading, setLoading] = useState(false);
     const [submitted, setSubmitted] = useState(false);
     const [error, setError] = useState('');
+    const [companyType, setCompanyType] = useState('Proprietorship/Establishment');
 
     async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
         e.preventDefault();
@@ -52,13 +53,13 @@ export default function Register() {
 
     return (
         <main className="container" style={{ padding: '2rem 1rem' }}>
-            <Link href="/" style={{ display: 'inline-flex', alignItems: 'center', marginBottom: '2rem', color: '#94a3b8' }}>
+            <Link href="/" style={{ display: 'inline-flex', alignItems: 'center', marginBottom: '2rem', color: 'var(--secondary)' }}>
                 &larr; Back to Home
             </Link>
 
-            <div className="card" style={{ maxWidth: '800px', margin: '0 auto' }}>
+            <div className="card" style={{ maxWidth: '900px', margin: '0 auto' }}>
                 <h1 className="title">Vendor Registration</h1>
-                <p className="subtitle">Please fill in all mandatory fields and upload required documents.</p>
+                <p className="subtitle">Please fill in all mandatory fields.</p>
 
                 {error && (
                     <div style={{ background: 'rgba(239, 68, 68, 0.2)', color: '#fca5a5', padding: '1rem', borderRadius: '8px', marginBottom: '2rem' }}>
@@ -67,8 +68,8 @@ export default function Register() {
                 )}
 
                 <form onSubmit={handleSubmit}>
-                    {/* Section 1: Basic Info */}
-                    <h3 style={{ color: '#fff', borderBottom: '1px solid var(--card-border)', paddingBottom: '0.5rem', marginBottom: '1.5rem' }}>Company Information</h3>
+                    {/* Section 1: Company Information */}
+                    <h3 style={{ color: 'var(--foreground)', borderBottom: '1px solid var(--card-border)', paddingBottom: '0.5rem', marginBottom: '1.5rem' }}>Company Information</h3>
 
                     <div className="grid-2">
                         <div className="form-group">
@@ -77,12 +78,29 @@ export default function Register() {
                         </div>
                         <div className="form-group">
                             <label className="label">Type of Company</label>
-                            <select name="companyType" className="select">
+                            <select
+                                name="companyType"
+                                className="select"
+                                value={companyType}
+                                onChange={(e) => setCompanyType(e.target.value)}
+                            >
+                                <option value="Proprietorship/Establishment">Proprietorship/Establishment</option>
                                 <option value="LLC">LLC</option>
-                                <option value="Corporation">Corporation</option>
-                                <option value="Sole Proprietorship">Sole Proprietorship</option>
-                                <option value="Partnership">Partnership</option>
+                                <option value="Joint stock company">Joint stock company</option>
+                                <option value="Public listed company">Public listed company</option>
+                                <option value="JV">JV</option>
+                                <option value="Holding company">Holding company</option>
+                                <option value="Others">Others</option>
                             </select>
+                            {companyType === 'Others' && (
+                                <input
+                                    name="companyTypeOther"
+                                    className="input"
+                                    placeholder="Specify company type..."
+                                    style={{ marginTop: '0.5rem' }}
+                                    required
+                                />
+                            )}
                         </div>
                     </div>
 
@@ -103,18 +121,70 @@ export default function Register() {
                             <input type="number" name="yearRegistered" className="input" placeholder="2000" />
                         </div>
                         <div className="form-group">
-                            <label className="label">Number of Employees</label>
-                            <input type="number" name="employeeCount" className="input" placeholder="50" />
+                            <label className="label">Telephone Number</label>
+                            <input type="tel" name="telephone" className="input" placeholder="+966 12 345 6789" />
                         </div>
                     </div>
 
                     <div className="form-group">
-                        <label className="label">Annual Turnover</label>
-                        <input name="annualTurnover" className="input" placeholder="$1,000,000" />
+                        <label className="label">Full Address *</label>
+                        <textarea name="address" className="textarea" rows={3} required placeholder="Building No, Street, District, City, Country" />
                     </div>
 
-                    {/* Section 2: Contact */}
-                    <h3 style={{ color: '#fff', borderBottom: '1px solid var(--card-border)', paddingBottom: '0.5rem', marginBottom: '1.5rem', marginTop: '2rem' }}>Contact Details</h3>
+                    <div className="form-group">
+                        <label className="label">OEM Status (Stockist/Dealer/Exclusive Agent)</label>
+                        <input name="oemStatus" className="input" placeholder="e.g. Authorized Dealer for Samsung" />
+                    </div>
+
+                    {/* Section 2: Business Details */}
+                    <h3 style={{ color: 'var(--foreground)', borderBottom: '1px solid var(--card-border)', paddingBottom: '0.5rem', marginBottom: '1.5rem', marginTop: '2rem' }}>Business Details</h3>
+
+                    <div className="grid-2">
+                        <div className="form-group">
+                            <label className="label">Number of Employees</label>
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', marginTop: '0.5rem' }}>
+                                <label className="flex items-center gap-2" style={{ cursor: 'pointer', color: 'var(--foreground)' }}>
+                                    <input type="radio" name="employeeCount" value="upto20" /> Upto 20 employees
+                                </label>
+                                <label className="flex items-center gap-2" style={{ cursor: 'pointer', color: 'var(--foreground)' }}>
+                                    <input type="radio" name="employeeCount" value="20-200" /> 20-200 employees
+                                </label>
+                                <label className="flex items-center gap-2" style={{ cursor: 'pointer', color: 'var(--foreground)' }}>
+                                    <input type="radio" name="employeeCount" value="200-1000" /> 200-1000 employees
+                                </label>
+                                <label className="flex items-center gap-2" style={{ cursor: 'pointer', color: 'var(--foreground)' }}>
+                                    <input type="radio" name="employeeCount" value="over1000" /> More than 1000
+                                </label>
+                            </div>
+                        </div>
+
+                        <div className="form-group">
+                            <label className="label">Annual Turnover</label>
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', marginTop: '0.5rem' }}>
+                                <label className="flex items-center gap-2" style={{ cursor: 'pointer', color: 'var(--foreground)' }}>
+                                    <input type="radio" name="annualTurnover" value="upto1M" /> Upto 1 Million SAR
+                                </label>
+                                <label className="flex items-center gap-2" style={{ cursor: 'pointer', color: 'var(--foreground)' }}>
+                                    <input type="radio" name="annualTurnover" value="1-10M" /> 1 to 10 Million SAR
+                                </label>
+                                <label className="flex items-center gap-2" style={{ cursor: 'pointer', color: 'var(--foreground)' }}>
+                                    <input type="radio" name="annualTurnover" value="10-100M" /> 10-100 Million SAR
+                                </label>
+                                <label className="flex items-center gap-2" style={{ cursor: 'pointer', color: 'var(--foreground)' }}>
+                                    <input type="radio" name="annualTurnover" value="over100M" /> &gt; 100 Million
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="form-group">
+                        <label className="label">Materials and Services Rendered *</label>
+                        <textarea name="materialsServices" className="textarea" rows={3} required placeholder="Describe the materials you supply or services you offer..." />
+                    </div>
+
+
+                    {/* Section 3: Contact */}
+                    <h3 style={{ color: 'var(--foreground)', borderBottom: '1px solid var(--card-border)', paddingBottom: '0.5rem', marginBottom: '1.5rem', marginTop: '2rem' }}>Contact Details</h3>
 
                     <div className="grid-2">
                         <div className="form-group">
@@ -122,35 +192,43 @@ export default function Register() {
                             <input type="email" name="email" className="input" required placeholder="info@acme.com" />
                         </div>
                         <div className="form-group">
-                            <label className="label">Accounts Manager Email</label>
-                            <input type="email" name="accountsEmail" className="input" placeholder="accounts@acme.com" />
+                            <label className="label">Mobile Number (Sales)</label>
+                            <input type="tel" name="salesMobile" className="input" placeholder="+966 50 123 4567" />
                         </div>
                     </div>
+                    <div className="form-group">
+                        <label className="label">Accounts Manager Email</label>
+                        <input type="email" name="accountsEmail" className="input" placeholder="accounts@acme.com" />
+                    </div>
 
-                    {/* Section 3: Experience */}
-                    <h3 style={{ color: '#fff', borderBottom: '1px solid var(--card-border)', paddingBottom: '0.5rem', marginBottom: '1.5rem', marginTop: '2rem' }}>Experience & Clients</h3>
+                    {/* Section 4: Experience */}
+                    <h3 style={{ color: 'var(--foreground)', borderBottom: '1px solid var(--card-border)', paddingBottom: '0.5rem', marginBottom: '1.5rem', marginTop: '2rem' }}>Experience & Clients</h3>
 
                     <div className="form-group">
                         <label className="label">Past Works / Major Projects</label>
                         <textarea name="pastWorks" className="textarea" rows={3} placeholder="List major projects..." />
                     </div>
                     <div className="form-group">
+                        <label className="label">Major Client List (Past 5 Years)</label>
+                        <textarea name="majorClients" className="textarea" rows={3} placeholder="List of major clients..." />
+                    </div>
+                    <div className="form-group">
                         <label className="label">Vendor IDs of Reputed Clients</label>
                         <textarea name="clientVendorIDs" className="textarea" rows={2} placeholder="e.g. Aramco: 12345, SABIC: 67890" />
                     </div>
 
-                    {/* Section 4: Documents */}
-                    <h3 style={{ color: '#fff', borderBottom: '1px solid var(--card-border)', paddingBottom: '0.5rem', marginBottom: '1.5rem', marginTop: '2rem' }}>Documents Upload</h3>
-                    <p className="text-sm text-gray-400 mb-4" style={{ fontSize: '0.875rem', color: '#94a3b8' }}>Supported formats: PDF, JPG, PNG. Max 5MB per file.</p>
+                    {/* Section 5: Documents */}
+                    <h3 style={{ color: 'var(--foreground)', borderBottom: '1px solid var(--card-border)', paddingBottom: '0.5rem', marginBottom: '1.5rem', marginTop: '2rem' }}>Documents Upload</h3>
+                    <p className="text-sm text-gray-400 mb-4" style={{ fontSize: '0.875rem', color: 'var(--secondary)' }}>Optional during registration. You can upload these later.</p>
 
                     <div className="grid-2">
                         <div className="form-group">
-                            <label className="label">Commercial Registration (CR) *</label>
-                            <input type="file" name="crFile" className="input" required accept=".pdf,.jpg,.png" />
+                            <label className="label">Commercial Registration (CR)</label>
+                            <input type="file" name="crFile" className="input" accept=".pdf,.jpg,.png" />
                         </div>
                         <div className="form-group">
-                            <label className="label">VAT Certificate *</label>
-                            <input type="file" name="vatFile" className="input" required accept=".pdf,.jpg,.png" />
+                            <label className="label">VAT Certificate</label>
+                            <input type="file" name="vatFile" className="input" accept=".pdf,.jpg,.png" />
                         </div>
                         <div className="form-group">
                             <label className="label">Company Profile</label>
@@ -173,3 +251,4 @@ export default function Register() {
         </main>
     );
 }
+

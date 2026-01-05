@@ -104,3 +104,65 @@ async function getBucketName() {
   const bucket = response.data.buckets.find((b: any) => b.bucketId === process.env.B2_BUCKET_ID);
   return bucket ? bucket.bucketName : '';
 }
+
+export async function getFile(fileName: string) {
+  try {
+    await getB2();
+    const bucketName = await getBucketName();
+
+    if (!bucketName) {
+      throw new Error('Bucket Name not found');
+    }
+
+    const response = await b2.downloadFileByName({
+      bucketName: bucketName,
+      fileName,
+      responseType: 'arraybuffer'
+    });
+
+    return {
+      data: response.data,
+      contentType: response.headers['content-type'],
+      contentLength: response.headers['content-length']
+    };
+  } catch (error) {
+    console.error('Error getting file:', error);
+    throw error;
+  }
+}
+
+export async function deleteFile(fileName: string) {
+  try {
+    await getB2();
+    const bucketName = await getBucketName();
+
+    // 1. We need to find the file ID to delete it (deleteFileVersion)
+    // B2 doesn't have a simple "delete by name" that wipes all versions easily in one go via this lib?
+    // Actually, listFileNames with prefix might help.
+
+    // However, usually we can just hide it, but let's try to find and delete.
+    // For simplicity in this specific app context where we just uploaded it:
+
+    const response = await b2.listFileNames({
+      bucketId: process.env.B2_BUCKET_ID!,
+      startFileName: fileName,
+      maxFileCount: 1,
+      prefix: fileName,
+      delimiter: ''
+    });
+
+    if (response.data.files.length > 0 && response.data.files[0].fileName === fileName) {
+      const fileId = response.data.files[0].fileId;
+      await b2.deleteFileVersion({
+        fileId,
+        fileName
+      });
+      return true;
+    }
+
+    return false; // File not found
+  } catch (error) {
+    console.error('Error deleting file:', error);
+    throw error;
+  }
+}
