@@ -1,13 +1,24 @@
 import nodemailer from 'nodemailer';
 
+const config = {
+  host: (process.env.EMAIL_HOST || '').trim(),
+  port: Number(process.env.EMAIL_PORT) || 465,
+  user: (process.env.EMAIL_USER || '').trim(),
+  pass: (process.env.EMAIL_PASS || '').trim(),
+  from: (process.env.EMAIL_FROM || '').trim(),
+};
+
 const transporter = nodemailer.createTransport({
-  host: process.env.EMAIL_HOST,
-  port: Number(process.env.EMAIL_PORT),
-  secure: false, // true for 465, false for other ports
+  host: config.host,
+  port: config.port,
+  secure: config.port === 465,
   auth: {
-    user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASS,
+    user: config.user,
+    pass: config.pass,
   },
+  tls: {
+    rejectUnauthorized: false
+  }
 });
 
 export async function sendVendorCode(email: string, vendorCode: string, companyName: string) {
