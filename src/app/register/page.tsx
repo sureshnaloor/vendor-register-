@@ -1,6 +1,7 @@
 "use client";
 import React, { useState } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 
 export default function Register() {
     const [loading, setLoading] = useState(false);
@@ -57,9 +58,19 @@ export default function Register() {
                 &larr; Back to Home
             </Link>
 
-            <div className="card" style={{ maxWidth: '900px', margin: '0 auto' }}>
+            <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
+                <Image
+                    src="/logo.jpg"
+                    alt="JAL International Logo"
+                    width={180}
+                    height={60}
+                    style={{ objectFit: 'contain', marginBottom: '1rem' }}
+                />
                 <h1 className="title">Vendor Registration</h1>
-                <p className="subtitle">Please fill in all mandatory fields.</p>
+                <p className="subtitle">Please fill in all mandatory fields marked with <span style={{ color: '#ef4444', fontWeight: 'bold' }}>*</span> completely to receive your registration code.</p>
+            </div>
+
+            <div className="card" style={{ maxWidth: '900px', margin: '0 auto' }}>
 
                 {error && (
                     <div style={{ background: 'rgba(239, 68, 68, 0.2)', color: '#fca5a5', padding: '1rem', borderRadius: '8px', marginBottom: '2rem' }}>
@@ -73,7 +84,7 @@ export default function Register() {
 
                     <div className="grid-2">
                         <div className="form-group">
-                            <label className="label">Company Name *</label>
+                            <label className="label">Company Name <span style={{ color: '#ef4444' }}>*</span></label>
                             <input name="companyName" className="input" required placeholder="Acme Corp" />
                         </div>
                         <div className="form-group">
@@ -106,11 +117,11 @@ export default function Register() {
 
                     <div className="grid-2">
                         <div className="form-group">
-                            <label className="label">Registration Number (CR) *</label>
+                            <label className="label">Registration Number (CR) <span style={{ color: '#ef4444' }}>*</span></label>
                             <input name="registrationNumber" className="input" required placeholder="CR-123456" />
                         </div>
                         <div className="form-group">
-                            <label className="label">VAT Number *</label>
+                            <label className="label">VAT Number <span style={{ color: '#ef4444' }}>*</span></label>
                             <input name="vatNumber" className="input" required placeholder="VAT-123456" />
                         </div>
                     </div>
@@ -127,7 +138,7 @@ export default function Register() {
                     </div>
 
                     <div className="form-group">
-                        <label className="label">Full Address *</label>
+                        <label className="label">Full Address <span style={{ color: '#ef4444' }}>*</span></label>
                         <textarea name="address" className="textarea" rows={3} required placeholder="Building No, Street, District, City, Country" />
                     </div>
 
@@ -178,7 +189,7 @@ export default function Register() {
                     </div>
 
                     <div className="form-group">
-                        <label className="label">Materials and Services Rendered *</label>
+                        <label className="label">Materials and Services Rendered <span style={{ color: '#ef4444' }}>*</span></label>
                         <textarea name="materialsServices" className="textarea" rows={3} required placeholder="Describe the materials you supply or services you offer..." />
                     </div>
 
@@ -188,7 +199,7 @@ export default function Register() {
 
                     <div className="grid-2">
                         <div className="form-group">
-                            <label className="label">Official Email (for Vendor Code) *</label>
+                            <label className="label">Official Email (for Vendor Code) <span style={{ color: '#ef4444' }}>*</span></label>
                             <input type="email" name="email" className="input" required placeholder="info@acme.com" />
                         </div>
                         <div className="form-group">
@@ -248,7 +259,7 @@ export default function Register() {
 
                 </form>
             </div>
-        </main>
+        </main >
     );
 }
 

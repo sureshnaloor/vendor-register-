@@ -56,14 +56,28 @@ export async function sendVendorCode(email: string, vendorCode: string, companyN
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e2e8f0; border-radius: 8px;">
           <h2 style="color: #0f172a;">Welcome to Vendor Registration Portal of JAL</h2>
           <p>Dear ${companyName},</p>
-          <p>Your registration has been successfully processed.</p>
+          <p>Your registration has been successfully initiated.</p>
+          
           <div style="background-color: #f1f5f9; padding: 20px; border-radius: 8px; text-align: center; margin: 20px 0;">
-            <p style="margin: 0; color: #64748b; font-size: 14px;">Your Vendor Registration Code is:</p>
+            <p style="margin: 0; color: #64748b; font-size: 14px;">Your 10-Digit Vendor Registration Code is:</p>
             <h1 style="margin: 10px 0; color: #3b82f6; letter-spacing: 2px;">${vendorCode}</h1>
           </div>
-          <p>Please keep this code safe. You will need it to login to the portal to update your information or upload additional documents.
-          Please note this is not the JAL's SAP Vendor code which will be mailed to you separately by Vendor Management , JAL International after successful pre-qualification subject to all criteria being met</p>
-          <p>Best regards,<br>Vendor Management, JAL International.</p>
+
+          <p>To complete your registration, please log in to our portal using the code above:</p>
+          
+          <div style="text-align: center; margin: 25px 0;">
+            <a href="https://vendor-register.vercel.app/login" style="background-color: #3b82f6; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-weight: bold; display: inline-block;">Login to Vendor Portal</a>
+          </div>
+
+          <p>By logging in, you can complete all required fields and upload all necessary documents. 
+          <strong>Please note that completing your profile and uploading all required documents is essential to make your company eligible for registration with JAL International.</strong></p>
+          
+          <p style="color: #64748b; font-size: 13px; margin-top: 20px; border-top: 1px solid #e2e8f0; padding-top: 20px;">
+            Please note: This is a <strong>Registration Code</strong> for our portal and is not the final JAL SAP Vendor Code. 
+            The SAP Vendor Code will be issued separately by Vendor Management, JAL International, after successful pre-qualification and subject to all criteria being met.
+          </p>
+          
+          <p>Best regards,<br>Vendor Management,<br>JAL International.</p>
         </div>
       `,
     });
