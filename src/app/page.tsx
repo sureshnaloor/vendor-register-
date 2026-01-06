@@ -16,7 +16,7 @@ export default function Home() {
                 <svg width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M12 4v16m8-8H4"></path></svg>
               </div>
               <h2 style={{ fontSize: '1.5rem', fontWeight: 'bold', margin: '0 0 0.5rem', color: '#f54141ff' }}>New Vendor?</h2>
-              <p style={{ color: '#94a3b8' }}>Register your company to become an approved vendor. Submit your documents securely.</p>
+              <p style={{ color: '#94a3b8' }}>Register your company to qualify as an approved vendor. Submit your documents securely.</p>
             </div>
             <button className="btn btn-primary w-full">Start Registration &rarr;</button>
           </Link>
@@ -27,7 +27,7 @@ export default function Home() {
                 <svg width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"></path></svg>
               </div>
               <h2 style={{ fontSize: '1.5rem', fontWeight: 'bold', margin: '0 0 0.5rem', color: '#f54141ff' }}>Already Registered?</h2>
-              <p style={{ color: '#94a3b8' }}>Login with your Vendor Code to update your profile or upload new documents.</p>
+              <p style={{ color: '#94a3b8' }}>Login with your Vendor Registration Code to update your profile or upload new documents.</p>
             </div>
             <button className="btn btn-secondary w-full">Vendor Login &rarr;</button>
           </Link>
