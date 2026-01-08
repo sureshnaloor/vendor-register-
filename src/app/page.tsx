@@ -52,7 +52,18 @@ export default function Home() {
           </Link>
 
         </div>
+
+        {/* Footer with Admin Link */}
+        <footer style={{ marginTop: '5rem', borderTop: '1px solid var(--card-border)', paddingTop: '2rem', width: '100%' }}>
+          <p style={{ color: 'var(--secondary)', fontSize: '0.85rem' }}>
+            © {new Date().getFullYear()} JAL International. All rights reserved.
+            <Link href="/admin/login" style={{ marginLeft: '1rem', color: 'var(--secondary)', textDecoration: 'none', opacity: 0.6 }}>
+              Admin Portal
+            </Link>
+          </p>
+        </footer>
       </div>
     </main>
   );
 }
+

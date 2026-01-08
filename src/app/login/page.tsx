@@ -37,7 +37,10 @@ export default function Login() {
     }
 
     return (
-        <main className="container" style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <main className="container" style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '2rem 1rem' }}>
+            <Link href="/" style={{ alignSelf: 'flex-start', display: 'inline-flex', alignItems: 'center', marginBottom: '2rem', color: 'var(--secondary)' }}>
+                &larr; Back to Home
+            </Link>
             <div className="card" style={{ maxWidth: '400px', width: '100%' }}>
                 <h1 className="title text-center" style={{ fontSize: '2rem', marginBottom: '2rem' }}>Vendor Login</h1>
 

@@ -1,6 +1,7 @@
 "use client";
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 
 export default function DashboardClient({ initialData, vendorCode }: { initialData: any, vendorCode: string }) {
     const [isEditing, setIsEditing] = useState(false);
@@ -86,8 +87,16 @@ export default function DashboardClient({ initialData, vendorCode }: { initialDa
     }
 
     return (
-        <main className="container">
-            <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '2rem 0', borderBottom: '1px solid var(--card-border)', marginBottom: '2rem' }}>
+        <main className="container" style={{ padding: '2rem 1rem' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
+                <Link href="/" style={{ display: 'inline-flex', alignItems: 'center', color: 'var(--secondary)', textDecoration: 'none' }}>
+                    &larr; Back to Home
+                </Link>
+                <div style={{ fontSize: '0.875rem', color: 'var(--secondary)' }}>
+                    {new Date().toLocaleDateString(undefined, { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
+                </div>
+            </div>
+            <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '1.5rem 0', borderBottom: '1px solid var(--card-border)', marginBottom: '2rem' }}>
                 <div>
                     <h1 className="title" style={{ fontSize: '2rem', marginBottom: '0.5rem' }}>Vendor Dashboard</h1>
                     {!isEditing && <p className="subtitle" style={{ margin: 0 }}>Welcome, {initialData.companyName}</p>}

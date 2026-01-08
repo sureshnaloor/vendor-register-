@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
 import { getVendorData, saveVendorData, uploadFile } from '@/lib/b2';
+import { sendAdminAlert } from '@/lib/email';
 
 export async function POST(req: NextRequest) {
     try {
@@ -18,6 +19,7 @@ export async function POST(req: NextRequest) {
         }
 
         const formData = await req.formData();
+        const companyName = (formData.get('companyName') as string) || currentData.companyName;
 
         // 2. Update Text Fields
         // We only update fields that are allowed to be edited. 
@@ -74,6 +76,9 @@ export async function POST(req: NextRequest) {
 
         // 4. Save back to B2
         await saveVendorData(vendorCode, updatedData);
+
+        // 5. Send Admin Alert
+        await sendAdminAlert('update', companyName, vendorCode);
 
         return NextResponse.json({ success: true, data: updatedData });
     } catch (error) {

@@ -166,3 +166,53 @@ export async function deleteFile(fileName: string) {
     throw error;
   }
 }
+
+export async function listAllVendors() {
+  try {
+    await getB2();
+    const bucketId = process.env.B2_BUCKET_ID;
+
+    if (!bucketId) {
+      throw new Error('B2_BUCKET_ID is not defined');
+    }
+
+    let allFiles: any[] = [];
+    let nextFileName: string | null = null;
+
+    do {
+      const response = await b2.listFileNames({
+        bucketId: bucketId as string,
+        startFileName: nextFileName || '',
+        maxFileCount: 1000,
+        prefix: 'vendors/',
+        delimiter: '',
+      });
+
+      allFiles = allFiles.concat(response.data.files);
+      nextFileName = response.data.nextFileName;
+    } while (nextFileName);
+
+    // Filter for profile.json files
+    const profiles = allFiles.filter((f: any) => f.fileName.endsWith('/profile.json'));
+
+    // Fetch details for each profile
+    const vendorDetails = await Promise.all(
+      profiles.map(async (f: any) => {
+        try {
+          const vendorCode = f.fileName.split('/')[1];
+          const data = await getVendorData(vendorCode);
+          return data;
+        } catch (e) {
+          console.error(`Error fetching vendor ${f.fileName}:`, e);
+          return null;
+        }
+      })
+    );
+
+    return vendorDetails.filter((v: any) => v !== null);
+  } catch (error) {
+    console.error('Error listing all vendors:', error);
+    throw error;
+  }
+}
+

@@ -88,3 +88,40 @@ export async function sendVendorCode(email: string, vendorCode: string, companyN
     return false;
   }
 }
+
+export async function sendAdminAlert(type: 'registration' | 'update', companyName: string, vendorCode: string) {
+  try {
+    const adminEmail = process.env.EMAIL_USER;
+    if (!adminEmail) return false;
+
+    const activeTransporter = getTransporter();
+    const subject = type === 'registration'
+      ? `Alert: New Vendor Registered - ${companyName}`
+      : `Alert: Vendor Profile Updated - ${companyName}`;
+
+    const info = await activeTransporter.sendMail({
+      from: process.env.EMAIL_FROM,
+      to: adminEmail,
+      subject: subject,
+      html: `
+        <div style="font-family: Arial, sans-serif; padding: 20px; border: 1px solid #e2e8f0; border-radius: 8px;">
+          <h2 style="color: #0f172a;">${type === 'registration' ? 'New Vendor Registration' : 'Vendor Profile Update'}</h2>
+          <p>The following vendor activity has occurred on the portal:</p>
+          <ul style="list-style: none; padding: 0;">
+            <li><strong>Company Name:</strong> ${companyName}</li>
+            <li><strong>Vendor Code:</strong> ${vendorCode}</li>
+            <li><strong>Action:</strong> ${type === 'registration' ? 'New Registration' : 'Profile/Document Update'}</li>
+            <li><strong>Time:</strong> ${new Date().toLocaleString()}</li>
+          </ul>
+          <p>Please log in to the system for details.</p>
+        </div>
+      `,
+    });
+    console.log('Admin Alert Sent: %s', info.messageId);
+    return true;
+  } catch (error) {
+    console.error('Error sending admin alert:', error);
+    return false;
+  }
+}
+

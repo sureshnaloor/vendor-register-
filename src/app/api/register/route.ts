@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { uploadFile, saveVendorData } from '@/lib/b2';
-import { sendVendorCode } from '@/lib/email';
+import { sendVendorCode, sendAdminAlert } from '@/lib/email';
 import { nanoid } from 'nanoid';
 
 export async function POST(req: NextRequest) {
@@ -110,6 +110,9 @@ export async function POST(req: NextRequest) {
 
         // Send Email
         await sendVendorCode(email, vendorCode, companyName);
+
+        // Send Admin Alert
+        await sendAdminAlert('registration', companyName, vendorCode);
 
         return NextResponse.json({ success: true, message: 'Vendor registered successfully' });
     } catch (error) {
