@@ -188,7 +188,11 @@ export default function DashboardClient({ initialData, vendorCode }: { initialDa
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
                             <DocRow label="Commercial Registration" fileKey="crFile" path={initialData.documents?.crFile} isEditing={isEditing} onDelete={handleDeleteFile} />
                             <DocRow label="VAT Certificate" fileKey="vatFile" path={initialData.documents?.vatFile} isEditing={isEditing} onDelete={handleDeleteFile} />
+                            <DocRow label="National Address" fileKey="nationalAddressFile" path={initialData.documents?.nationalAddressFile} isEditing={isEditing} onDelete={handleDeleteFile} />
                             <DocRow label="Company Profile" fileKey="profileFile" path={initialData.documents?.profileFile} isEditing={isEditing} onDelete={handleDeleteFile} />
+                            <DocRow label="ISO 9001 Certificate" fileKey="iso9001File" path={initialData.documents?.iso9001File} isEditing={isEditing} onDelete={handleDeleteFile} />
+                            <DocRow label="ISO 14001 Certificate" fileKey="iso14001File" path={initialData.documents?.iso14001File} isEditing={isEditing} onDelete={handleDeleteFile} />
+                            <DocRow label="ISO 45001 Certificate" fileKey="iso45001File" path={initialData.documents?.iso45001File} isEditing={isEditing} onDelete={handleDeleteFile} />
                             <DocRow label="Brochure" fileKey="brochureFile" path={initialData.documents?.brochureFile} isEditing={isEditing} onDelete={handleDeleteFile} />
                         </div>
                     </div>
@@ -281,6 +285,68 @@ export default function DashboardClient({ initialData, vendorCode }: { initialDa
                     </div>
                 </div>
 
+                {/* Quality Standards Section */}
+                <div className="card" style={{ marginTop: '2rem' }}>
+                    <h2 style={{ fontSize: '1.25rem', fontWeight: 600, marginBottom: '1.5rem' }}>Quality Standards</h2>
+                    <div className="grid-2">
+                        {isEditing ? (
+                            <>
+                                <div className="form-group">
+                                    <label className="label">In-house Quality Policy exists?</label>
+                                    <div style={{ display: 'flex', gap: '1.5rem', marginTop: '0.5rem' }}>
+                                        <label className="flex items-center gap-2" style={{ cursor: 'pointer', color: 'var(--foreground)' }}>
+                                            <input type="radio" name="hasInHousePolicy" value="yes" defaultChecked={initialData.hasInHousePolicy === 'yes'} /> Yes
+                                        </label>
+                                        <label className="flex items-center gap-2" style={{ cursor: 'pointer', color: 'var(--foreground)' }}>
+                                            <input type="radio" name="hasInHousePolicy" value="no" defaultChecked={initialData.hasInHousePolicy === 'no' || !initialData.hasInHousePolicy} /> No
+                                        </label>
+                                    </div>
+                                </div>
+                                <div className="form-group">
+                                    <label className="label">ISO 9001 Certified?</label>
+                                    <div style={{ display: 'flex', gap: '1.5rem', marginTop: '0.5rem' }}>
+                                        <label className="flex items-center gap-2" style={{ cursor: 'pointer', color: 'var(--foreground)' }}>
+                                            <input type="radio" name="hasIso9001" value="yes" defaultChecked={initialData.hasIso9001 === 'yes'} /> Yes
+                                        </label>
+                                        <label className="flex items-center gap-2" style={{ cursor: 'pointer', color: 'var(--foreground)' }}>
+                                            <input type="radio" name="hasIso9001" value="no" defaultChecked={initialData.hasIso9001 === 'no' || !initialData.hasIso9001} /> No
+                                        </label>
+                                    </div>
+                                </div>
+                                <div className="form-group">
+                                    <label className="label">ISO 14001 Certified?</label>
+                                    <div style={{ display: 'flex', gap: '1.5rem', marginTop: '0.5rem' }}>
+                                        <label className="flex items-center gap-2" style={{ cursor: 'pointer', color: 'var(--foreground)' }}>
+                                            <input type="radio" name="hasIso14001" value="yes" defaultChecked={initialData.hasIso14001 === 'yes'} /> Yes
+                                        </label>
+                                        <label className="flex items-center gap-2" style={{ cursor: 'pointer', color: 'var(--foreground)' }}>
+                                            <input type="radio" name="hasIso14001" value="no" defaultChecked={initialData.hasIso14001 === 'no' || !initialData.hasIso14001} /> No
+                                        </label>
+                                    </div>
+                                </div>
+                                <div className="form-group">
+                                    <label className="label">ISO 45001 Certified?</label>
+                                    <div style={{ display: 'flex', gap: '1.5rem', marginTop: '0.5rem' }}>
+                                        <label className="flex items-center gap-2" style={{ cursor: 'pointer', color: 'var(--foreground)' }}>
+                                            <input type="radio" name="hasIso45001" value="yes" defaultChecked={initialData.hasIso45001 === 'yes'} /> Yes
+                                        </label>
+                                        <label className="flex items-center gap-2" style={{ cursor: 'pointer', color: 'var(--foreground)' }}>
+                                            <input type="radio" name="hasIso45001" value="no" defaultChecked={initialData.hasIso45001 === 'no' || !initialData.hasIso45001} /> No
+                                        </label>
+                                    </div>
+                                </div>
+                            </>
+                        ) : (
+                            <>
+                                <ProfileRow label="In-house Policy" value={initialData.hasInHousePolicy === 'yes' ? 'Yes' : 'No'} />
+                                <ProfileRow label="ISO 9001 Certified" value={initialData.hasIso9001 === 'yes' ? 'Yes' : 'No'} />
+                                <ProfileRow label="ISO 14001 Certified" value={initialData.hasIso14001 === 'yes' ? 'Yes' : 'No'} />
+                                <ProfileRow label="ISO 45001 Certified" value={initialData.hasIso45001 === 'yes' ? 'Yes' : 'No'} />
+                            </>
+                        )}
+                    </div>
+                </div>
+
                 {isEditing && (
                     <div style={{ display: 'flex', gap: '1rem', justifyContent: 'flex-end', marginTop: '2rem' }}>
                         <button
@@ -300,9 +366,8 @@ export default function DashboardClient({ initialData, vendorCode }: { initialDa
                         </button>
                     </div>
                 )}
-
             </form>
-        </main>
+        </main >
     );
 }
 

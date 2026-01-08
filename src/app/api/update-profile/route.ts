@@ -25,8 +25,9 @@ export async function POST(req: NextRequest) {
             'companyName', 'registrationNumber', 'vatNumber', 'email', 'accountsEmail',
             'companyType', 'yearRegistered', 'employeeCount', 'annualTurnover',
             'pastWorks', 'clientVendorIDs',
-            // New Fields
-            'address', 'telephone', 'salesMobile', 'oemStatus', 'materialsServices', 'majorClients'
+            'address', 'telephone', 'salesMobile', 'oemStatus', 'materialsServices', 'majorClients',
+            // Quality Standards
+            'hasInHousePolicy', 'hasIso9001', 'hasIso14001', 'hasIso45001'
         ];
 
         const updatedData = { ...currentData };
@@ -47,7 +48,10 @@ export async function POST(req: NextRequest) {
         }
 
         // 3. Handle File Uploads
-        const fileKeys = ['crFile', 'vatFile', 'profileFile', 'brochureFile'];
+        const fileKeys = [
+            'crFile', 'vatFile', 'profileFile', 'brochureFile',
+            'nationalAddressFile', 'iso9001File', 'iso14001File', 'iso45001File'
+        ];
         // Ensure documents object exists
         updatedData.documents = updatedData.documents || {};
 

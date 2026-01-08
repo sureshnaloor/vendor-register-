@@ -29,6 +29,12 @@ export async function POST(req: NextRequest) {
         const materialsServices = formData.get('materialsServices') as string;
         const majorClients = formData.get('majorClients') as string;
 
+        // Quality Standards Fields
+        const hasInHousePolicy = formData.get('hasInHousePolicy') as string;
+        const hasIso9001 = formData.get('hasIso9001') as string;
+        const hasIso14001 = formData.get('hasIso14001') as string;
+        const hasIso45001 = formData.get('hasIso45001') as string;
+
         // Validations
         // 1. Mandatory Text Fields
         if (!companyName || !email || !registrationNumber || !vatNumber || !address || !materialsServices) {
@@ -45,7 +51,10 @@ export async function POST(req: NextRequest) {
 
         // Upload Files (Optional)
         const fileUrls: Record<string, string> = {};
-        const fileKeys = ['crFile', 'vatFile', 'profileFile', 'brochureFile'];
+        const fileKeys = [
+            'crFile', 'vatFile', 'profileFile', 'brochureFile',
+            'nationalAddressFile', 'iso9001File', 'iso14001File', 'iso45001File'
+        ];
 
         for (const key of fileKeys) {
             const file = formData.get(key) as File;
@@ -80,6 +89,11 @@ export async function POST(req: NextRequest) {
             oemStatus,
             materialsServices,
             majorClients,
+            // Quality Standards
+            hasInHousePolicy,
+            hasIso9001,
+            hasIso14001,
+            hasIso45001,
             documents: fileUrls,
             createdAt: new Date().toISOString(),
             updatedAt: new Date().toISOString(),

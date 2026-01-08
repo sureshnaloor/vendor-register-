@@ -228,7 +228,57 @@ export default function Register() {
                         <textarea name="clientVendorIDs" className="textarea" rows={2} placeholder="e.g. Aramco: 12345, SABIC: 67890" />
                     </div>
 
-                    {/* Section 5: Documents */}
+                    {/* Section 5: Quality Standards */}
+                    <h3 style={{ color: 'var(--foreground)', borderBottom: '1px solid var(--card-border)', paddingBottom: '0.5rem', marginBottom: '1.5rem', marginTop: '2rem' }}>Quality Standards</h3>
+
+                    <div className="grid-2">
+                        <div className="form-group">
+                            <label className="label">In-house Quality Policy exists?</label>
+                            <div style={{ display: 'flex', gap: '1.5rem', marginTop: '0.5rem' }}>
+                                <label className="flex items-center gap-2" style={{ cursor: 'pointer', color: 'var(--foreground)' }}>
+                                    <input type="radio" name="hasInHousePolicy" value="yes" /> Yes
+                                </label>
+                                <label className="flex items-center gap-2" style={{ cursor: 'pointer', color: 'var(--foreground)' }}>
+                                    <input type="radio" name="hasInHousePolicy" value="no" defaultChecked /> No
+                                </label>
+                            </div>
+                        </div>
+                        <div className="form-group">
+                            <label className="label">ISO 9001 Certified?</label>
+                            <div style={{ display: 'flex', gap: '1.5rem', marginTop: '0.5rem' }}>
+                                <label className="flex items-center gap-2" style={{ cursor: 'pointer', color: 'var(--foreground)' }}>
+                                    <input type="radio" name="hasIso9001" value="yes" /> Yes
+                                </label>
+                                <label className="flex items-center gap-2" style={{ cursor: 'pointer', color: 'var(--foreground)' }}>
+                                    <input type="radio" name="hasIso9001" value="no" defaultChecked /> No
+                                </label>
+                            </div>
+                        </div>
+                        <div className="form-group">
+                            <label className="label">ISO 14001 Certified?</label>
+                            <div style={{ display: 'flex', gap: '1.5rem', marginTop: '0.5rem' }}>
+                                <label className="flex items-center gap-2" style={{ cursor: 'pointer', color: 'var(--foreground)' }}>
+                                    <input type="radio" name="hasIso14001" value="yes" /> Yes
+                                </label>
+                                <label className="flex items-center gap-2" style={{ cursor: 'pointer', color: 'var(--foreground)' }}>
+                                    <input type="radio" name="hasIso14001" value="no" defaultChecked /> No
+                                </label>
+                            </div>
+                        </div>
+                        <div className="form-group">
+                            <label className="label">ISO 45001 Certified?</label>
+                            <div style={{ display: 'flex', gap: '1.5rem', marginTop: '0.5rem' }}>
+                                <label className="flex items-center gap-2" style={{ cursor: 'pointer', color: 'var(--foreground)' }}>
+                                    <input type="radio" name="hasIso45001" value="yes" /> Yes
+                                </label>
+                                <label className="flex items-center gap-2" style={{ cursor: 'pointer', color: 'var(--foreground)' }}>
+                                    <input type="radio" name="hasIso45001" value="no" defaultChecked /> No
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Section 6: Documents */}
                     <h3 style={{ color: 'var(--foreground)', borderBottom: '1px solid var(--card-border)', paddingBottom: '0.5rem', marginBottom: '1.5rem', marginTop: '2rem' }}>Documents Upload</h3>
                     <p className="text-sm text-gray-400 mb-4" style={{ fontSize: '0.875rem', color: 'var(--secondary)' }}>Optional during registration. You can upload these later.</p>
 
@@ -242,8 +292,24 @@ export default function Register() {
                             <input type="file" name="vatFile" className="input" accept=".pdf,.jpg,.png" />
                         </div>
                         <div className="form-group">
+                            <label className="label">National Address</label>
+                            <input type="file" name="nationalAddressFile" className="input" accept=".pdf,.jpg,.png" />
+                        </div>
+                        <div className="form-group">
                             <label className="label">Company Profile</label>
                             <input type="file" name="profileFile" className="input" accept=".pdf" />
+                        </div>
+                        <div className="form-group">
+                            <label className="label">ISO 9001 Certificate</label>
+                            <input type="file" name="iso9001File" className="input" accept=".pdf,.jpg,.png" />
+                        </div>
+                        <div className="form-group">
+                            <label className="label">ISO 14001 Certificate</label>
+                            <input type="file" name="iso14001File" className="input" accept=".pdf,.jpg,.png" />
+                        </div>
+                        <div className="form-group">
+                            <label className="label">ISO 45001 Certificate</label>
+                            <input type="file" name="iso45001File" className="input" accept=".pdf,.jpg,.png" />
                         </div>
                         <div className="form-group">
                             <label className="label">Brochure</label>
