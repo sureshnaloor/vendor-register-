@@ -114,7 +114,44 @@ export default function AdminDashboardClient() {
                                 <h2 style={{ fontSize: '1.75rem', fontWeight: 700, margin: 0 }}>{selectedVendor.companyName}</h2>
                                 <p style={{ color: 'var(--secondary)', margin: '0.5rem 0 0' }}>Registered on {new Date(selectedVendor.createdAt).toLocaleString()}</p>
                             </div>
-                            <button onClick={() => setSelectedVendor(null)} className="btn btn-secondary" style={{ padding: '0.5rem 1rem', fontSize: '0.875rem' }}>Close Details</button>
+                            <div style={{ display: 'flex', gap: '0.75rem' }}>
+                                <button
+                                    onClick={async () => {
+                                        const btn = document.activeElement as HTMLButtonElement;
+                                        const originalText = btn?.innerText || 'Download Full Package';
+                                        try {
+                                            if (btn) {
+                                                btn.innerText = 'Preparing...';
+                                                btn.disabled = true;
+                                            }
+                                            const res = await fetch(`/api/admin/vendors/${selectedVendor.vendorCode}/download`);
+                                            if (!res.ok) throw new Error('Download failed');
+
+                                            const blob = await res.blob();
+                                            const url = window.URL.createObjectURL(blob);
+                                            const a = document.createElement('a');
+                                            a.href = url;
+                                            a.download = `vendor_package_${selectedVendor.vendorCode}.zip`;
+                                            document.body.appendChild(a);
+                                            a.click();
+                                            window.URL.revokeObjectURL(url);
+                                            document.body.removeChild(a);
+                                        } catch (err) {
+                                            alert('Failed to download package');
+                                        } finally {
+                                            if (btn) {
+                                                btn.innerText = originalText;
+                                                btn.disabled = false;
+                                            }
+                                        }
+                                    }}
+                                    className="btn btn-primary"
+                                    style={{ padding: '0.5rem 1rem', fontSize: '0.875rem' }}
+                                >
+                                    Download Full Package
+                                </button>
+                                <button onClick={() => setSelectedVendor(null)} className="btn btn-secondary" style={{ padding: '0.5rem 1rem', fontSize: '0.875rem' }}>Close Details</button>
+                            </div>
                         </div>
 
                         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2.5rem' }}>
